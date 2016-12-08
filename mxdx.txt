@@ -1,0 +1,130 @@
+面向对象
+  重点在象
+        抽象：抽离相似的类，方便被多次使用（可以理解为一个函数封装）
+把具有相同特征的代码抽离出来封装到一起，归为一类，在这一类上扩充方法或属性，使这个功能更加强大
+面向对象的写法是从难到易（开发者），面向过程是从易到难（使用者）
+三大特征：封装，继承，抽象，多态
+面向对象中，变量为属性（静态），函数为方法（动态）
+
+面向对象中一个函数（方法）叫一类，叫做构造函数，或者工厂函数
+这个函数专门拿来构造一个对象
+有原材料，有加工，有出厂
+
+var f2 = new fn1()   类的实例化过程，f2叫实例化对象
+
+new 运算符（专门用来运算函数）
+用了new 函数可以不用加括号直接调用，new 运算之后的（）主要用来传参
+new 之后，其实是偷偷在函数中创建一个空白的对象，并默认返回这个对象
+new 之后，如果返回值为对象类型（也包括函数），返回的就是返回时写的对象
+
+写法
+function 构造函数（）{
+	this.属性
+}
+构造函数.原型.方法 = function（）{}(构造函数也可以直接加方法，构造函数.方法（），它会在原型前面)
+var 对象 = new 构造函数
+对象.方法()    //调用
+
+原型
+prototype
+给某个类定义一个class（也可以直接写在函数中，类似一个style样式）
+
+当一个函数被申明的时候，该函数下就默认有一个属性prototype（该属性的值是一个对象），当我们去调用一个对象的属性或者方法时，如果该对象自身没有该属性或方法时，就会调用到该对象的构造函数下的属性或者方法
+注意：prototype是给这个类的实例化对象使用，自身用不了
+
+原型链
+___proto___
+对象都有原型链
+对象的原型链和构造函数的原型相连
+及对象的原型链 == 构造函数的原型
+
+起始是对象： 找链 -> 构造函数的原型 -> 构造函数原型的原型链（因为构造函数的原型链是一个对象）->对象原型
+
+起始是函数： 找链 -> function（构造函数的原型）-> function的原型链 -> 对象原型
+
+起始是数组：先找到的构造函数的原型是array，在array上找不到才会找到function
+
+面向过程转为面向对象（用实例来熟悉过程，真正写面向对象时，应该直接写）
+先变形
+尽量不要出现函数嵌套函数
+可以有全局变量
+把onload中不是赋值的语句放到单独的函数中
+改变this的指向（通常在事件或者定时器中this比较容易出问题）
+
+this指向问题
+首先先分清楚this的属性的值是什么类型的
+不管在什么地方，单纯的函数名加（），函数中的this肯定是指向window
+将一个函数给一个事件调用，this的指向一定是触发事件的这个对象（在pc端）
+定时器中this ->window
+只要定时器是直接调用某个函数或者方法，那么this的指向一定是window，否则this该是谁就是谁
+如果是有主的情况下，及一个方法中的this，this的指向一般是那么方法对应的对象，但是如果是定时器调用的这个方法，this还是会指向window
+调用是如果加了call或则apply写的this是谁就是谁，最大
+
+包装对象
+简单类型（简单：undefined，Null，Boolean，Number，string；复杂：obj函数也是一种obj）查看某个属性或则方法时，系统会偷偷的把这个简单类型转换为对象类型的对象，从对象去查找要查看的结果，之后这个包装对象会自动销毁，整个过程就是简单对象也能查看（调用）某些属性的原理，由于会自动销毁，所以只能查看与调用，不能改写
+
+hasOwnProperty（在object下的属性）：查看某个属性是不是自身的（及不会沿着原型链往上找）obj.hasOwnProperty（name）返回的是一个Boolean值，是自身的返回true，不是自身的返回false
+
+复杂类型的赋值，
+对象类型用 = 赋值时，是赋址，及直接赋值会引用同一个内存地址
+解决办法：
+通过循环，将值赋给另一个
+例 var json = {
+	name：‘momo’，
+	age：6
+}
+var json2 = {}
+for（var attr in json）{    //便利所有属性
+	json2[attr] = json[attr]
+}
+循环时，如果出现复杂对象包含复杂对象，会出错，
+解决方案：
+例var arr = [1,2,3,4,[1,2],function abc（）{}，{name：‘mome’}]
+var arr2 = extend（arr）
+function extend（obj）{
+	var o = ！！obj.push？[]:{};
+	for(var attr in obj){
+		if(typeof obj[attr] == ‘object'){
+			o[attr] = extend(obj[attr]);
+		}else{
+			o[attr] = obj[attr];
+		}
+	}
+	return o;
+}
+缺点：系统自带的属性循环不到
+
+JSON.stringify   //对象变成字符串（JSON）
+三个参数：
+1.放对象
+2.回调函数（处理数据）
+3.为了看（换行，右进，1~10有效，超出10都当10算）
+JSON.parse()   //字符串（JSON）转对象
+参数同上
+
+例JSON.stringify(obj,function(key,val){
+	if(key == ‘momo’){
+		return val.replace(/m/g,'M')
+	}
+	return val;
+},10)
+{"name":"MoMo","age":10}
+
+constructor 可以查看某个对象的构造函数 （每个函数都有，系统自动生成，生成后在prototype上）
+例 obj.constructor == Objcet
+注：constructor 会被无形修改，虽然不会改变某个方法的执行结果，但是会影响代码维护
+例
+function Aaa（）{}；
+Aaa.prototype = {
+	在里面添加属性
+	name = ‘小明’
+}
+此时由于Aaa.prototype相当与从新赋值了，所以系统自带的constructor会被覆盖，此时如果去找var a1 = new Aaa；找到的会是object，应手动修改在prototype中写上constructor：Aaa
+
+instanceof：二元运算符
+检测某个对象的老爹是不是某个构造函数（对象与构造函数在原型链上是否有关系）
+例 function Aaa（）{}
+var a1 = new Aaa（）；
+alert（a1 instanceof Aaa）弹出true
+alert（a1 instanceof object）弹出true
+alert（a1 instanceof Array）弹出flase
