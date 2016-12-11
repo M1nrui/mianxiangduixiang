@@ -1,0 +1,76 @@
+继承
+在js中，继承就是让一个对象拥有另一个对象的属性或方法
+拷贝继承 通用行，有没有new都可以
+类式继承 需要new 构造函数
+原型继承 无new 对象
+
+在属性方面，都用此方法
+调用父类并将父类的this修改成子类，这个时候子类就有了父类的属性
+例
+function Drag（id）{}
+function Drag2（id）{
+	drag.call(this,id)
+}
+call(改变this指向，实参)
+apply（改变this指向，[实参集合]）
+
+拷贝继承
+方法的继承
+通过for in遍历父类原型上的方法，赋值给子类的原型，从而达到方法的继承
+缺陷：系统自动生成的无法继承，遍历所有比较占性能
+例
+for（var attr in Drag。prototype）{
+	Drag2.prototype[attr] = Drag.prototype[attr]
+}
+
+类式继承
+方法的继承
+function paohui（）{}
+paohui.prototype = new Drag（）
+Drag2.prototype = new paohui（）；
+Drag2.prototype。constructor = Drag2  // 修正指向
+
+原型继承
+方法的继承
+var a = {
+	name：‘小米’
+	}
+var b = cloneObj（a）；
+function cloneObj（obj）{
+	var f = function（）{}
+	f.prototype = obj；
+	return new f（）；
+}
+
+组件：提供一个完善的功能的方法或者数据的封装
+
+组件要求
+易扩展，易维护
+
+自定义事件的开发：目的是多人开发的时候不会相互影响（模拟addEvent）
+自定义事件分为绑定事件和开发事件
+绑定事件： 目的是记录对应事件名的事件函数
+触发事件： 一次性执行某个对象对应事件名的所有函数
+执行时直接调用触发事件即可
+
+绑定
+原理，利用数组存放事件，这个每个事件就不会互相影响
+		   对象，事件，执行什么操作	
+function addEvent(obj,event,fn){
+	obj.Event = obj.Event||{}
+	//对象有属性，走属性，没有创建（第一次）
+	obj.Event[event] = obj.Event[event]||[]
+	//如果对象属性下有这个事件，直接用，没有，创建新数组方便存事件
+	obj.Event[event].push(fn)
+}
+
+触发
+function tirgger（obj,event）{
+	if(！obj.Event[event]){
+		return null;
+	}
+	obj.Event[event].forEach(function(e){
+		e(obj)
+	})
+}
+arr.forEach(function(每一项，每一项对应的index，数组){})
